@@ -26,7 +26,7 @@
     #bucin-test .btn-group {
       margin-top: 30px;
       position: relative;
-      height: 60px;
+      height: 120px;
     }
     #btnNo, #btnYes {
       padding: 10px 30px;
@@ -39,17 +39,36 @@
       position: absolute;
       top: 0;
     }
-    #btnYes {
-      background: #ffb3d1;
-      color: #fff;
-      left: 30%;
-    }
-    #btnNo {
+    /* #btnYes {
+      background: #e60073;
+      color: #ffb3d1;
+      left: 40%;
+    } */
+      #btnYes {
+    background: #e60073;
+    color: #ffb3d1;
+    left: 40%;
+    z-index: 1;
+  }
+  #btnYes:hover {
+    background: #ffb3d1;
+    color: #e60073;
+    box-shadow: 0 0 12px #e60073a0;
+    transform: scale(1.08);
+  }
+    /* #btnNo {
       background: #fff;
       color: #e60073;
       border: 2px solid #e60073;
-      left: 55%;
-    }
+      left: 45%;
+    } */
+     #btnNo {
+    background: #fff;
+    color: #e60073;
+    border: 2px solid #e60073;
+
+    z-index: 2;
+  }
     #stiker-bucin {
       margin-top: 30px;
       min-height: 120px;
@@ -82,6 +101,16 @@
       background: #ffb3d1;
       color: #e60073;
     }
+
+  #btnNo.shake {
+    animation: shake 0.6s;
+  }
+  @keyframes shake {
+    10%, 90% { transform: translateX(-2px); }
+    20%, 80% { transform: translateX(4px); }
+    30%, 50%, 70% { transform: translateX(-8px); }
+    40%, 60% { transform: translateX(8px); }
+  }
   </style>
 </head>
 <body>
@@ -93,13 +122,13 @@
     <button class="btn-next" onclick="nextPage()">Selanjutnya</button>
   </div>
 
-  <div id="galeri" class="halaman">
+  <!-- <div id="galeri" class="halaman">
     <h2>Kenangan Kita 📸</h2>
     <img src="https://via.placeholder.com/300x200?text=Foto+1" alt="Foto 1" style="margin:10px">
     <img src="https://via.placeholder.com/300x200?text=Foto+2" alt="Foto 2" style="margin:10px">
     <p>Masih banyak lagi kenangan yang akan kita buat bersama 💑</p>
     <button class="btn-next" onclick="nextPage()">Selanjutnya</button>
-  </div>
+  </div> -->
 
   <div id="ucapan" class="halaman">
     <h2>Pesan Untukmu 🎁</h2>
@@ -111,25 +140,51 @@
   <div id="bucin-test" class="halaman">
     <h2>Bucin Test 😳</h2>
     <p id="bucin-question">Apakah kamu sayang aku juga? 🥺👉👈</p>
-    <div class="btn-group">
+    <!-- <div class="btn-group">
       <button id="btnYes">Yes</button>
       <button id="btnNo">No</button>
-    </div>
+    </div> -->
+    <div class="btn-group" style="position:relative; height:120px;">
+  <button id="btnYes" style="left:40%;">Yes</button>
+  <button id="btnNo" style="left:calc(43% + 120px);">No</button>
+</div>
     <div id="stiker-bucin"></div>
     <div id="bucin-msg"></div>
   </div>
 
   <script>
     // Daftar id halaman berurutan
-    const pages = ["surat", "galeri", "ucapan", "bucin-test"];
+    const pages = ["surat", "ucapan", "bucin-test"];
     let currentPage = 0;
 
-    function showPage(idx) {
-      document.querySelectorAll('.halaman').forEach((div, i) => {
-        div.classList.toggle('aktif', i === idx);
-      });
-      currentPage = idx;
-    }
+    // function showPage(idx) {
+    //   document.querySelectorAll('.halaman').forEach((div, i) => {
+    //     div.classList.toggle('aktif', i === idx);
+    //   });
+    //   currentPage = idx;
+    // }
+//     function setInitialNoPosition() {
+//   // Pastikan tombol Yes sudah di-render
+//   setTimeout(() => {
+//     pindahNo();
+//   }, 100); // Delay agar layout sudah siap
+// }
+
+// Modifikasi showPage agar jika halaman bucin-test, posisi No diacak
+function showPage(idx) {
+  document.querySelectorAll('.halaman').forEach((div, i) => {
+    div.classList.toggle('aktif', i === idx);
+  });
+  currentPage = idx;
+  // Jika halaman bucin-test, reset posisi tombol No ke sebelah Yes
+  if (pages[idx] === "bucin-test") {
+    btnNo.style.left = "calc(43% + 120px)";
+    btnNo.style.top = "0";
+    noClickCount = 0;
+    bucinMsg.innerText = ""; // reset pesan
+    stikerDiv.innerHTML = ""; // reset stiker
+  }
+}
 
     function nextPage() {
       if (currentPage < pages.length - 1) {
@@ -162,25 +217,144 @@
     ];
 
     // Bikin tombol No menghindar
-    let noClickCount = 0;
-    btnNo.addEventListener('mouseenter', pindahNo);
-    btnNo.addEventListener('click', pindahNo);
+  let noClickCount = 0;
+  btnNo.addEventListener('mouseenter', pindahNo);
+  btnNo.addEventListener('mousedown', function(e) {
+    e.preventDefault();
+    pindahNo();
+  });
+  btnNo.addEventListener('click', function(e) {
+  // Deteksi klik asli pada tombol No
+  bucinMsg.innerText = "Yah, kok pilih No sih 😭 Coba pencet Yes dong!";
+  btnNo.classList.add('shake');
+  setTimeout(() => btnNo.classList.remove('shake'), 600);
+});
 
-    function pindahNo() {
-      noClickCount++;
-      // Random posisi (dalam parent .btn-group)
-      const parent = btnNo.parentElement;
-      const parentWidth = parent.offsetWidth - btnNo.offsetWidth;
-      const parentHeight = parent.offsetHeight - btnNo.offsetHeight;
-      const left = Math.random() * parentWidth;
-      const top = Math.random() * parentHeight;
-      btnNo.style.left = left + "px";
-      btnNo.style.top = top + "px";
-      // Sedikit pesan iseng kalau terlalu sering
-      if (noClickCount > 5) {
-        bucinMsg.innerText = "Jangan kabur dong, pilih Yes aja~ 😝";
+  function isOverlap(rect1, rect2, padding = 10) {
+  // Tambahkan padding area aman di sekitar tombol Yes
+  return !(
+    rect1.right < rect2.left - padding ||
+    rect1.left > rect2.right + padding ||
+    rect1.bottom < rect2.top - padding ||
+    rect1.top > rect2.bottom + padding
+  );
+}
+
+function pindahNo() {
+  noClickCount++;
+  const parent = btnNo.parentElement;
+  const parentRect = parent.getBoundingClientRect();
+  const yesRect = btnYes.getBoundingClientRect();
+  let tries = 0, overlap;
+  let left, top;
+
+  do {
+    left = Math.random() * (parent.offsetWidth - btnNo.offsetWidth);
+    top = Math.random() * (parent.offsetHeight - btnNo.offsetHeight);
+    btnNo.style.left = left + "px";
+    btnNo.style.top = top + "px";
+    const noRect = btnNo.getBoundingClientRect();
+    overlap = isOverlap(noRect, yesRect, 10);
+    tries++;
+    if (tries > 50) break;
+  } while (overlap);
+
+  if (noClickCount > 5) {
+    bucinMsg.innerText = "Jangan kabur dong, pilih Yes aja~ 😝";
+    if (noClickCount > 10 ) {
+      bucinMsg.innerText = "Ayo dong, pilih Yes! Aku udah siapin stiker lucu buat kamu! 🥺";
+      if (noClickCount > 20) {
+        bucinMsg.innerText = "Serius ini kamu sampe segitunya pengen klik tombol No? 🤨";
+        if (noClickCount > 30) {
+        bucinMsg.innerText = "Oke, aku serius nih. Pilih Yes aja yaa~ 😅";
+        if (noClickCount > 31) {
+          alert("PARAHHHH MALAH PENGEN KLIK NO TERUS, AKU HACK NIHH! 😡");
+        // if (noClickCount > 32) {
+        // alert("KOK BANDEL! AKU HACK PC KAMU NIII 😡");
+        // }
+          if (noClickCount > 32) {
+          // Buat canvas full screen untuk efek Matrix rain
+          let canvas = document.createElement('canvas');
+          canvas.id = 'matrixRain';
+          canvas.style.position = 'fixed';
+          canvas.style.top = 0;
+          canvas.style.left = 0;
+          canvas.style.width = '100vw';
+          canvas.style.height = '100vh';
+          canvas.style.zIndex = 9999;
+          canvas.style.pointerEvents = 'none';
+          document.body.appendChild(canvas);
+
+          // Matrix rain effect
+          let ctx = canvas.getContext('2d');
+          let w = window.innerWidth;
+          let h = window.innerHeight;
+          canvas.width = w;
+          canvas.height = h;
+          let fontSize = 18;
+          let columns = Math.floor(w / fontSize);
+          // Array untuk posisi y setiap kolom
+          let drops = [];
+          for (let i = 0; i < columns; i++) {
+            drops[i] = Math.random() * h / fontSize;
+          }
+
+          function drawMatrix() {
+            ctx.fillStyle = 'rgba(0,0,0,0.08)';
+            ctx.fillRect(0, 0, w, h);
+            ctx.fillStyle = '#0f0';
+            ctx.font = fontSize + 'pt monospace';
+            for (let i = 0; i < columns; i++) {
+              // Karakter acak 0 atau 1
+              const text = Math.random() > 0.5 ? '0' : '1';
+              ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+              // Jika sudah sampai bawah, reset ke atas dengan random
+              if (drops[i] * fontSize > h && Math.random() > 0.975) {
+                drops[i] = 0;
+              }
+              drops[i]++;
+            }
+          }
+          let interval = setInterval(drawMatrix, 50);
+
+          // Disable semua tombol
+          document.querySelectorAll("button").forEach(btn => btn.disabled = true);
+
+          setTimeout(() => {
+            clearInterval(interval);
+            document.body.style.background = "#ffe6f0";
+            let rain = document.getElementById('matrixRain');
+            if (rain) rain.remove();
+            document.querySelectorAll("button").forEach(btn => btn.disabled = false);
+            bucinMsg.innerText = "Udah ya jangan nakal lagi, pilih Yes dong 😘";
+            noClickCount = 0;
+          }, 9000);
+        }
+
       }
     }
+  }
+}
+    
+  }
+}
+
+    // function pindahNo() {
+    //   noClickCount++;
+    //   // Random posisi (dalam parent .btn-group)
+    //   const parent = btnNo.parentElement;
+    //   const parentWidth = parent.offsetWidth - btnNo.offsetWidth;
+    //   const parentHeight = parent.offsetHeight - btnNo.offsetHeight;
+    //   const left = Math.random() * parentWidth;
+    //   const top = Math.random() * parentHeight;
+    //   btnNo.style.left = left + "px";
+    //   btnNo.style.top = top + "px";
+      
+    //   // Sedikit pesan iseng kalau terlalu sering
+    //   if (noClickCount > 5) {
+    //     bucinMsg.innerText = "Jangan kabur dong, pilih Yes aja~ 😝";
+    //   }
+    // }
 
     btnYes.addEventListener('click', function() {
       // Random stiker dan pesan
@@ -189,10 +363,11 @@
       stikerDiv.innerHTML = `<img src="${stiker}" alt="stiker bucin">`;
       bucinMsg.innerText = pesan;
       // Reset tombol No
-      btnNo.style.left = "55%";
+      btnNo.style.left = "calc(43% + 120px)";
       btnNo.style.top = "0";
       noClickCount = 0;
     });
+
 
     // Inisialisasi halaman pertama
     showPage(0);
