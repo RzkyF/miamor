@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Untuk Kamu 💖</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #ffe6f0;
+      color: #333;
+      text-align: center;
+      padding: 30px;
+    }
+    nav a {
+      margin: 10px;
+      text-decoration: none;
+      color: #e60073;
+      font-weight: bold;
+    }
+    .halaman {
+      display: none;
+      animation: fadeIn 1s ease-in-out;
+    }
+    .aktif {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Bucin Test Styles */
+    #bucin-test .btn-group {
+      margin-top: 30px;
+      position: relative;
+      height: 60px;
+    }
+    #btnNo, #btnYes {
+      padding: 10px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      margin: 0 20px;
+      cursor: pointer;
+      transition: 0.2s;
+      position: absolute;
+      top: 0;
+    }
+    #btnYes {
+      background: #ffb3d1;
+      color: #fff;
+      left: 30%;
+    }
+    #btnNo {
+      background: #fff;
+      color: #e60073;
+      border: 2px solid #e60073;
+      left: 55%;
+    }
+    #stiker-bucin {
+      margin-top: 30px;
+      min-height: 120px;
+    }
+    #stiker-bucin img {
+      width: 120px;
+      margin: 10px;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px #e6007340;
+    }
+    #bucin-msg {
+      font-size: 1.2em;
+      color: #e60073;
+      margin-top: 20px;
+      font-weight: bold;
+      min-height: 30px;
+    }
+  </style>
+</head>
+<body>
+  <h1>💌 Untuk Kamu 💌</h1>
+  <nav>
+    <a href="#surat">Surat</a>
+    <a href="#galeri">Galeri</a>
+    <a href="#ucapan">Ucapan</a>
+    <a href="#bucin-test">Bucin Test</a>
+  </nav>
+
+  <div id="surat" class="halaman aktif">
+    <h2>Hai Kamu...</h2>
+    <p>Aku cuma mau bilang, kamu itu luar biasa. Terima kasih sudah hadir di hidupku. 💕</p>
+  </div>
+
+  <div id="galeri" class="halaman">
+    <h2>Kenangan Kita 📸</h2>
+    <img src="https://via.placeholder.com/300x200?text=Foto+1" alt="Foto 1" style="margin:10px">
+    <img src="https://via.placeholder.com/300x200?text=Foto+2" alt="Foto 2" style="margin:10px">
+    <p>Masih banyak lagi kenangan yang akan kita buat bersama 💑</p>
+  </div>
+
+  <div id="ucapan" class="halaman">
+    <h2>Pesan Untukmu 🎁</h2>
+    <p>Aku gak butuh alasan untuk sayang kamu. Kamu cukup jadi kamu aja, itu udah cukup. 💖</p>
+  </div>
+
+  <!-- Halaman Bucin Test -->
+  <div id="bucin-test" class="halaman">
+    <h2>Bucin Test 😳</h2>
+    <p id="bucin-question">Apakah kamu sayang aku juga? 🥺👉👈</p>
+    <div class="btn-group">
+      <button id="btnYes">Yes</button>
+      <button id="btnNo">No</button>
+    </div>
+    <div id="stiker-bucin"></div>
+    <div id="bucin-msg"></div>
+  </div>
+
+  <script>
+  function gantiHalaman(hash) {
+    const semua = document.querySelectorAll('.halaman');
+    semua.forEach(div => div.classList.remove('aktif'));
+    const target = document.querySelector(hash);
+    if (target) {
+      target.classList.add('aktif');
+    }
+  }
+
+  window.addEventListener('hashchange', () => {
+    gantiHalaman(location.hash);
+  });
+
+  window.addEventListener('load', () => {
+    if (!location.hash) {
+      location.hash = '#surat';
+    }
+    gantiHalaman(location.hash);
+  });
+
+  // Bucin Test Interaktif
+  const btnNo = document.getElementById('btnNo');
+  const btnYes = document.getElementById('btnYes');
+  const stikerDiv = document.getElementById('stiker-bucin');
+  const bucinMsg = document.getElementById('bucin-msg');
+
+  // Daftar stiker GIF bucin lucu
+  const stikerList = [
+    "https://media.giphy.com/media/3oKIPwoeGErMmaI43C/giphy.gif",
+    "https://media.giphy.com/media/1BcfiGlOGXzQk/giphy.gif",
+    "https://media.giphy.com/media/26ufnwz3wDUli7GU0/giphy.gif",
+    "https://media.giphy.com/media/3o6Zt481isNVuQI1l6/giphy.gif",
+    "https://media.giphy.com/media/1dIoYw1QFzQ2k/giphy.gif"
+  ];
+
+  // Pesan bucin
+  const pesanList = [
+    "Awww, aku juga sayang kamu! 💖",
+    "Kamu emang paling gemesin! 😘",
+    "Yeay! Kita bucin bareng yaa~ 🥰",
+    "Makasih udah sayang aku! 💌",
+    "Kamu bikin aku melting~ 💞"
+  ];
+
+  // Bikin tombol No menghindar
+  let noClickCount = 0;
+  btnNo.addEventListener('mouseenter', pindahNo);
+  btnNo.addEventListener('click', pindahNo);
+
+  function pindahNo() {
+    noClickCount++;
+    // Random posisi (dalam parent .btn-group)
+    const parent = btnNo.parentElement;
+    const parentWidth = parent.offsetWidth - btnNo.offsetWidth;
+    const parentHeight = parent.offsetHeight - btnNo.offsetHeight;
+    const left = Math.random() * parentWidth;
+    const top = Math.random() * parentHeight;
+    btnNo.style.left = left + "px";
+    btnNo.style.top = top + "px";
+    // Sedikit pesan iseng kalau terlalu sering
+    if (noClickCount > 5) {
+      bucinMsg.innerText = "Jangan kabur dong, pilih Yes aja~ 😝";
+    }
+  }
+
+  btnYes.addEventListener('click', function() {
+    // Random stiker dan pesan
+    const stiker = stikerList[Math.floor(Math.random() * stikerList.length)];
+    const pesan = pesanList[Math.floor(Math.random() * pesanList.length)];
+    stikerDiv.innerHTML = `<img src="${stiker}" alt="stiker bucin">`;
+    bucinMsg.innerText = pesan;
+    // Reset tombol No
+    btnNo.style.left = "55%";
+    btnNo.style.top = "0";
+    noClickCount = 0;
+  });
+</script>
